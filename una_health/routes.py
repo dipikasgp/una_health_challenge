@@ -11,11 +11,6 @@ from una_health.utils import clean_cols_with_nan
 main = Blueprint('main', __name__)
 
 
-@main.route('/')
-def home():
-    return "Hello, Docker!"
-
-#
 @main.route('/api/v1/levels/', methods=['GET'])
 def glucose_levels():
     # Get the params from the client side
