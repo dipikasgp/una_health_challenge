@@ -11,23 +11,28 @@ from una_health.utils import clean_cols_with_nan
 main = Blueprint('main', __name__)
 
 
-@main.route('/')
+#
 @main.route('/api/v1/levels/', methods=['GET'])
 def glucose_levels():
+    # Get the params from the client side
     user_id = request.args.get('user_id')
     start_time = request.args.get('start_time')
     end_time = request.args.get('end_time')
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
 
+    # Filter the query for fetching for the specified user_id
     query = GlucoseTrack.query.filter(GlucoseTrack.user_id == user_id)
 
+    # start_time and end_time filter is optional
     if start_time:
         query = query.filter(GlucoseTrack.device_timestamp >= start_time)
     if end_time:
         query = query.filter(GlucoseTrack.device_timestamp <= end_time)
 
+    # show the list in descending order of the device timestamp i.e the list shows the current data first
     query = query.order_by(GlucoseTrack.device_timestamp.desc())
+    # only few entries are returned based on the page number and per_page data number
     glucose_info = query.paginate(page=page, per_page=per_page)
     result = {
         "items": [item.to_dict() for item in glucose_info.items]
@@ -51,6 +56,7 @@ def populate_db():
     current_dir = os.getcwd()
     current_dir = current_dir + '\\una_health\\data_files\\'
     df = pd.DataFrame()
+    # Get the data from the excel files and preprocessing it
     for file in os.listdir(current_dir):
         if file.endswith(r'.csv'):
             temp_df = pd.read_csv(current_dir + file, skiprows=2)
@@ -59,6 +65,7 @@ def populate_db():
 
         df = pd.concat([df, temp_df], axis=0)
 
+    # column name mapping for german to english column names
     column_mapping = {'Gerat': 'device', 'Seriennummer': 'serial_number',
                       'Geratezeitstempel': 'device_timestamp',
                       'Aufzeichnungstyp': 'recording_type',

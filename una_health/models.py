@@ -11,6 +11,6 @@ class GlucoseTrack(db.Model):
     recording_type = db.Column(db.Integer)
     glucose_level = db.Column(db.Float)
 
+    # This method is to transform the fetched data into dictionary format
     def to_dict(self):
         return {key: val for key, val in self.__dict__.items() if not key.startswith('_')}
-
