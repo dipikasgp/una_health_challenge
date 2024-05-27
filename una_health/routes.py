@@ -11,6 +11,10 @@ from una_health.utils import clean_cols_with_nan
 main = Blueprint('main', __name__)
 
 
+@main.route('/')
+def home():
+    return "Hello, Docker!"
+
 #
 @main.route('/api/v1/levels/', methods=['GET'])
 def glucose_levels():
@@ -54,7 +58,14 @@ def glucose_levels_by_id(id):
 @main.route('/api/v1/populate_db/', methods=['POST'])
 def populate_db():
     current_dir = os.getcwd()
-    current_dir = current_dir + '\\una_health\\data_files\\'
+    is_docker = os.getenv('DOCKER') == 'true'
+    # if is_docker:
+    #     current_dir = '/usr/src/app/una_health/data_files/'
+    # else:
+    #     current_dir = current_dir + '\\una_health\\data_files\\'
+
+    current_dir = os.path.join(current_dir, 'una_health', 'data_files/')
+
     df = pd.DataFrame()
     # Get the data from the excel files and preprocessing it
     for file in os.listdir(current_dir):
