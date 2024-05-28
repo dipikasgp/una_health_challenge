@@ -1,6 +1,6 @@
 # una_health_challenge
 
- Demonstration of celery and redis as a message broker 
+ 
 
 ## Table of Contents
 
